@@ -190,10 +190,10 @@ class ResourcePage
             'meta_box_content'
         ], $this->token, 'normal', 'high', ['type' => 'basic']);
 
-        add_meta_box($this->token . '-testimonials', __('Program Testimonials', $this->token), [
+        add_meta_box($this->token . '-videos', __('Resource Videos', $this->token), [
             $this,
             'meta_box_content'
-        ], $this->token, 'normal', 'high', ['type' => 'testimonials']);
+        ], $this->token, 'normal', 'high', ['type' => 'videos']);
 
         add_meta_box($this->token . '-marketing', __('Marketing Details', $this->token), [
             $this,
@@ -332,11 +332,10 @@ class ResourcePage
         $fields = array_keys($field_data);
 
         foreach ($fields as $f) {
-
             if (isset($_POST[$f])) {
                 ${$f} = $_POST[$f];
 
-                if ($f != 'video_url') {
+                if (strpos($f, 'url') !== false) {
                     ${$f} = strip_tags(trim($_POST[$f]));
                 }
             }
@@ -344,7 +343,6 @@ class ResourcePage
             // Escape the URLs.
             if ('url' == $field_data[$f]['type'])
                 ${$f} = esc_url(${$f});
-
             if (${$f} == '') {
                 delete_post_meta($post_id, $f, get_post_meta($post_id, $f, true));
             } else {
@@ -393,33 +391,6 @@ class ResourcePage
                 'section' => 'info'
             ];
 
-            $fields['cta'] = [
-                'name' => __('Call To Action', $this->token),
-                'description' => __('The call to action for your page', $this->token),
-                'placeholder' => 'WATCH THE VIDEO',
-                'type' => 'text',
-                'default' => 'WATCH THE VIDEO',
-                'section' => 'info'
-            ];
-
-            $fields['cta_url'] = [
-                'name' => __('Call To Action URL', $this->token),
-                'description' => __('The URL the user is directed to upon clicking the CTA button.', $this->token),
-                'placeholder' => '',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['video_url'] = [
-                'name' => __('Video Embed URL', $this->token),
-                'description' => __('The embed code for your program video.', $this->token),
-                'placeholder' => '',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
             $fields['legal_broker'] = [
                 'name' => __('Your Legal Broker', $this->token),
                 'description' => __('This will be displayed on the bottom of the page.', $this->token),
@@ -448,114 +419,29 @@ class ResourcePage
             ];
         }
 
-        if ($meta_box == 'testimonials' || $meta_box == 'all') {
-            $fields['test_1_name'] = [
-                'name' => __('Testimonial 1 Name', $this->token),
-                'description' => __('The name for the first testimonial.', $this->token),
-                'placeholder' => 'John Smith',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
+        if ($meta_box == 'videos' || $meta_box == 'all') {
+            $count = 1;
+            while ($count <= 5) {
+                $fields['video_' . $count . '_title'] = [
+                    'name' => __('Video ' . $count . ' Title', $this->token),
+                    'description' => __('The title for your video.', $this->token),
+                    'placeholder' => '',
+                    'type' => 'text',
+                    'default' => '',
+                    'section' => 'info'
+                ];
 
-            $fields['test_1_job'] = [
-                'name' => __('Testimonial 1 Occupation', $this->token),
-                'description' => __('The occupation for the first testimonial.', $this->token),
-                'placeholder' => 'Surgical Technologist',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
+                $fields['video_' . $count . '_url'] = [
+                    'name' => __('Video ' . $count . ' Embed URL', $this->token),
+                    'description' => __('The embed code for your video.', $this->token),
+                    'placeholder' => '',
+                    'type' => 'text',
+                    'default' => '',
+                    'section' => 'info'
+                ];
 
-            $fields['test_1_text'] = [
-                'name' => __('Testimonial 1 Text', $this->token),
-                'description' => __('The text for the first testimonial.', $this->token),
-                'placeholder' => '',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_1_photo'] = [
-                'name' => __('Testimonial 1 Photo', $this->token),
-                'description' => __('The photo for the first testimonial.', $this->token),
-                'placeholder' => '',
-                'type' => 'url',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_2_name'] = [
-                'name' => __('Testimonial 2 Name', $this->token),
-                'description' => __('The name for the second testimonial.', $this->token),
-                'placeholder' => 'John Smith',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_2_job'] = [
-                'name' => __('Testimonial 2 Occupation', $this->token),
-                'description' => __('The occupation for the second testimonial.', $this->token),
-                'placeholder' => 'Surgical Technologist',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_2_text'] = [
-                'name' => __('Testimonial 2 Text', $this->token),
-                'description' => __('The text for the second testimonial.', $this->token),
-                'placeholder' => '',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_2_photo'] = [
-                'name' => __('Testimonial 2 Photo', $this->token),
-                'description' => __('The photo for the second testimonial.', $this->token),
-                'placeholder' => '',
-                'type' => 'url',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_3_name'] = [
-                'name' => __('Testimonial 3 Name', $this->token),
-                'description' => __('The name for the third testimonial.', $this->token),
-                'placeholder' => 'John Smith',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_3_job'] = [
-                'name' => __('Testimonial 3 Occupation', $this->token),
-                'description' => __('The occupation for the third testimonial.', $this->token),
-                'placeholder' => 'Surgical Technologist',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_3_text'] = [
-                'name' => __('Testimonial 3 Text', $this->token),
-                'description' => __('The text for the third testimonial.', $this->token),
-                'placeholder' => '',
-                'type' => 'text',
-                'default' => '',
-                'section' => 'info'
-            ];
-
-            $fields['test_3_photo'] = [
-                'name' => __('Testimonial 3 Photo', $this->token),
-                'description' => __('The photo for the third testimonial.', $this->token),
-                'placeholder' => '',
-                'type' => 'url',
-                'default' => '',
-                'section' => 'info'
-            ];
+                $count++;
+            }
         }
 
         if ($meta_box == 'marketing' || $meta_box == 'all') {
