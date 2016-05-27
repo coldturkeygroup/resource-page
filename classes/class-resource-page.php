@@ -24,7 +24,6 @@ class ResourcePage
      */
     public function __construct($file, PlatformCRM $crm)
     {
-        global $wpdb;
         $this->dir = dirname($file);
         $this->file = $file;
         $this->assets_dir = trailingslashit($this->dir) . 'assets';
@@ -33,7 +32,6 @@ class ResourcePage
         $this->home_url = trailingslashit(home_url());
         $this->token = 'pf_resource_page';
         $this->crm = $crm;
-        $this->table_name = $wpdb->base_prefix . $this->token;
 
         // Register 'pf_resource_page' post type
         add_action('init', [$this, 'register_post_type']);
@@ -55,6 +53,9 @@ class ResourcePage
                 'register_custom_column_headings'
             ], 10, 1);
             add_filter('enter_title_here', [$this, 'change_default_title']);
+
+            // Create Platform CRM Campaigns for pages
+            add_action('publish_' . $this->token, [$this, 'create_platform_crm_campaign']);
         }
 
         // Flush rewrite rules on plugin activation
@@ -335,7 +336,7 @@ class ResourcePage
             if (isset($_POST[$f])) {
                 ${$f} = $_POST[$f];
 
-                if (strpos($f, 'url') !== false) {
+                if (strpos($f, 'url') === false) {
                     ${$f} = strip_tags(trim($_POST[$f]));
                 }
             }
@@ -364,8 +365,22 @@ class ResourcePage
             wp_enqueue_style($this->token);
             wp_enqueue_style('animate');
             wp_enqueue_style('source-sans');
-        }
 
+            wp_register_script($this->token . '-bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js');
+            wp_register_script($this->token . '-js', esc_url($this->assets_url . 'js/scripts.js'), [
+                'jquery'
+            ], RESOURCE_PAGE_PLUGIN_VERSION);
+            wp_register_script('mailgun-validator', esc_url($this->assets_url . 'js/mailgun-validator.js'), [
+                'jquery'
+            ], RESOURCE_PAGE_PLUGIN_VERSION);
+            wp_enqueue_script($this->token . '-bootstrap');
+            wp_enqueue_script($this->token . '-js');
+            wp_enqueue_script('mailgun-validator');
+            wp_localize_script($this->token . '-js', 'ResourcePage', [
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'mailgun' => defined('MAILGUN_PUBLIC') ? MAILGUN_PUBLIC : ''
+            ]);
+        }
     }
 
     /**
@@ -382,12 +397,30 @@ class ResourcePage
         $fields = [];
 
         if ($meta_box == 'basic' || $meta_box == 'all') {
-            $fields['logo'] = [
-                'name' => __('Logo Photo', $this->token),
-                'description' => __('The logo to be used in the funnel.', $this->token),
+            $fields['background_image'] = [
+                'name' => __('Background Image', $this->token),
+                'description' => __('The background image for the page.', $this->token),
                 'placeholder' => '',
                 'type' => 'url',
                 'default' => '',
+                'section' => 'info'
+            ];
+
+            $fields['modal_title'] = [
+                'name' => __('Modal Title', $this->token),
+                'description' => __('The title of the modal popup.', $this->token),
+                'placeholder' => 'Get Instant Access!',
+                'type' => 'text',
+                'default' => 'Get Instant Access!',
+                'section' => 'info'
+            ];
+
+            $fields['modal_cta'] = [
+                'name' => __('Modal CTA', $this->token),
+                'description' => __('The text of the submit button on the modal popup.', $this->token),
+                'placeholder' => 'Watch The Videos!',
+                'type' => 'text',
+                'default' => 'Watch The Videos!',
                 'section' => 'info'
             ];
 
@@ -496,16 +529,68 @@ class ResourcePage
     }
 
     /**
-     * Process the form submission from the user.
+     * Create a campaign on platformcrm.com
+     * for a defined Resource Page.
      *
+     * @param integer $post_ID
+     *
+     * @return bool
+     */
+    public function create_platform_crm_campaign($post_ID)
+    {
+        global $wpdb;
+
+        if (get_post_type($post_ID) != $this->token) {
+            return false;
+        }
+
+        $permalink = get_permalink($post_ID);
+        // See if we're using domain mapping
+        $wpdb->dmtable = $wpdb->base_prefix . 'domain_mapping';
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->dmtable}'") == $wpdb->dmtable) {
+            $blog_id = get_current_blog_id();
+            $options_table = $wpdb->base_prefix . $blog_id . '_' . 'options';
+            $mapped = $wpdb->get_var("SELECT domain FROM {$wpdb->dmtable} WHERE blog_id = '{$blog_id}' ORDER BY CHAR_LENGTH(domain) DESC LIMIT 1");
+            $domain = $wpdb->get_var("SELECT option_value FROM {$options_table} WHERE option_name = 'siteurl' LIMIT 1");
+            if ($mapped)
+                $permalink = str_replace($domain, 'http://' . $mapped, $permalink);
+        }
+
+        if (($_POST['post_status'] != 'publish') || ($_POST['original_post_status'] == 'publish')) {
+            $campaign_id = get_post_meta($post_ID, 'platform_crm_campaign', true);
+            if ($campaign_id != '' && is_int($campaign_id)) {
+                $this->crm->updateCampaign($campaign_id, get_the_title($post_ID), $permalink);
+            }
+            return true;
+        }
+
+        $campaign_id = $this->crm->createCampaign(get_the_title($post_ID), $permalink);
+
+        if (is_int($campaign_id)) {
+            update_post_meta($post_ID, 'platform_crm_campaign', $campaign_id);
+        }
+    }
+
+    /**
+     * Process the form submission from the user.
+     * Create a DB record for the user, and return the ID.
+     * Create a prospect on platformcrm.com with the given data.
+     *
+     * @return json
      */
     public function process_submission()
     {
         if (isset($_POST[$this->token . '_nonce']) && wp_verify_nonce($_POST[$this->token . '_nonce'], $this->token . '_submit_form')) {
-            global $wpdb;
-            $sq_ft = 0;
-            $blog_id = get_current_blog_id();
-            $page_id = sanitize_text_field($_POST['page_id']);
+            $first_name = sanitize_text_field($_POST['first_name']);
+            $email = sanitize_text_field($_POST['email']);
+            $platform_crm_campaign = sanitize_text_field($_POST['platform_crm_campaign']);
+
+            // Create the prospect on Platform CRM
+            $this->crm->createProspect([
+                'campaign_id' => $platform_crm_campaign,
+                'first_name' => $first_name,
+                'email' => $email
+            ]);
 
             echo json_encode(['status' => 'success']);
             die();

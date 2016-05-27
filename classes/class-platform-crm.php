@@ -47,7 +47,7 @@ class PlatformCRM
     public function createCampaign($title, $permalink)
     {
         try {
-            if ($this->api_key != null || $this->api_key != '') {
+            if ($this->api_key != null && $this->api_key != '') {
                 $response = $this->guzzle->post($this->api_base . 'campaigns/', [
                     'body' => [
                         'key' => $this->api_key,
@@ -78,7 +78,7 @@ class PlatformCRM
      */
     public function updateCampaign($id, $title, $permalink)
     {
-        if ($this->api_key != null || $this->api_key != '') {
+        if ($this->api_key != null && $this->api_key != '') {
             $this->guzzle->post($this->api_base . 'campaigns/' . $id, [
                 'body' => [
                     'key' => $this->api_key,
@@ -100,7 +100,7 @@ class PlatformCRM
     public function createProspect($data)
     {
         try {
-            if ($this->api_key != null || $this->api_key != '') {
+            if ($this->api_key != null && $this->api_key != '') {
                 $response = $this->guzzle->post($this->api_base . 'subscribers/', [
                     'body' => [
                         'key' => $this->api_key,
@@ -131,7 +131,7 @@ class PlatformCRM
     public function updateProspect($id, $data)
     {
         try {
-            if ($this->api_key != null || $this->api_key != '') {
+            if ($this->api_key != null && $this->api_key != '') {
                 $response = $this->guzzle->post($this->api_base . 'subscribers/update/', [
                     'body' => [
                         'key' => $this->api_key,
@@ -168,7 +168,7 @@ class PlatformCRM
     public function createNote($id, $title, $content)
     {
         try {
-            if ($this->api_key != null || $this->api_key != '') {
+            if ($this->api_key != null && $this->api_key != '') {
                 $response = $this->guzzle->post($this->api_base . 'subscribers/note/', [
                     'body' => [
                         'key' => $this->api_key,

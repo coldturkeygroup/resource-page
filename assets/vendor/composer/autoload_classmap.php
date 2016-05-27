@@ -6,7 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
-    'ColdTurkey\\ProgramPage\\PlatformCRM' => $baseDir . '/classes/class-platform-crm.php',
-    'ColdTurkey\\PlatformPage\\PlatformPage' => $baseDir . '/classes/class-platform-page.php',
-    'ColdTurkey\\PlatformPage\\PlatformPage_Admin' => $baseDir . '/classes/class-platform-page-admin.php',
+    'ColdTurkey\\ResourcePage\\PlatformCRM' => $baseDir . '/classes/class-platform-crm.php',
+    'ColdTurkey\\ResourcePage\\ResourcePage' => $baseDir . '/classes/class-resource-page.php',
+    'ColdTurkey\\ResourcePage\\ResourcePage_Admin' => $baseDir . '/classes/class-resource-page-admin.php',
 );
