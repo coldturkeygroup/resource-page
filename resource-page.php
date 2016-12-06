@@ -1,7 +1,7 @@
 <?php namespace ColdTurkey\ResourcePage;
 /*
  * Plugin Name: Resource Page
- * Version: 1.1
+ * Version: 1.1.1
  * Plugin URI: http://www.coldturkeygroup.com/
  * Description: Custom resource page containing informational videos for potential home buyers
  * Author: Cold Turkey Group
@@ -20,7 +20,7 @@ if ( ! defined( 'RESOURCE_PAGE_PLUGIN_PATH' ) )
 	define( 'RESOURCE_PAGE_PLUGIN_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 
 if ( ! defined( 'RESOURCE_PAGE_PLUGIN_VERSION' ) )
-	define( 'RESOURCE_PAGE_PLUGIN_VERSION', '1.1' );
+	define( 'RESOURCE_PAGE_PLUGIN_VERSION', '1.1.1' );
 
 require_once( 'classes/class-resource-page.php' );
 

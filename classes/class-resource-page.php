@@ -5,7 +5,7 @@ namespace ColdTurkey\ResourcePage;
 if (!defined('ABSPATH')) exit; // Exit if accessed directly.
 
 // Composer autoloader
-require_once RESOURCE_PAGE_PLUGIN_PATH . '../vendor/autoload.php';
+require_once RESOURCE_PAGE_PLUGIN_PATH . 'vendor/autoload.php';
 
 class ResourcePage
 {
