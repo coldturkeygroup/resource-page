@@ -1,4 +1,6 @@
-<?php namespace ColdTurkey\ResourcePage;
+<?php
+
+namespace ColdTurkey\ResourcePage;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly.
 
