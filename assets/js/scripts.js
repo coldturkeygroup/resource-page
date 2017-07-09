@@ -10,9 +10,9 @@ jQuery(function ($) {
         });
 
         // Email Validation
-        if (ResourcePage.mailgun !== undefined && ResourcePage.mailgun !== '') {
-            $('#email').mailgun_validator({
-                api_key: ResourcePage.mailgun,
+        if (ResourcePage.platformvalidator !== undefined && ResourcePage.platformvalidator !== '') {
+            $('#email').platform_email_validator({
+                api_key: ResourcePage.platformvalidator,
                 in_progress: function () {
                     $('#email').parent().removeClass('has-warning has-error');
                     $(".mailcheck-suggestion").remove();
@@ -26,6 +26,7 @@ jQuery(function ($) {
                 }
             });
         }
+
         // Parse Mailgun Responses
         function get_suggestion_str(is_valid, alternate) {
             if (is_valid) {
@@ -51,7 +52,7 @@ jQuery(function ($) {
 
         $(".form-group").on("click", ".mailcheck-suggestion a", function (e) {
             e.preventDefault();
-            $("#email").val($(this).text());
+            $("#email").val($(this).text()).parent().removeClass('has-warning has-error');
             $("[type=submit]").removeClass("disabled").removeAttr("disabled");
             $(".mailcheck-suggestion").remove();
         });

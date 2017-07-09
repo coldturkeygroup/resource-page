@@ -383,15 +383,15 @@ class ResourcePage
             wp_register_script($this->token . '-js', esc_url($this->assets_url . 'js/scripts.js'), [
                 'jquery'
             ], RESOURCE_PAGE_PLUGIN_VERSION);
-            wp_register_script('mailgun-validator', esc_url($this->assets_url . 'js/mailgun-validator.js'), [
+            wp_register_script('platform-email-validator', esc_url($this->assets_url . 'js/platform-email-validator.js'), [
                 'jquery'
             ], RESOURCE_PAGE_PLUGIN_VERSION);
             wp_enqueue_script($this->token . '-bootstrap');
             wp_enqueue_script($this->token . '-js');
-            wp_enqueue_script('mailgun-validator');
+            wp_enqueue_script('platform-email-validator');
             wp_localize_script($this->token . '-js', 'ResourcePage', [
-                'ajaxurl' => admin_url('admin-ajax.php'),
-                'mailgun' => defined('MAILGUN_PUBLIC') ? MAILGUN_PUBLIC : ''
+                'ajaxurl'           => admin_url('admin-ajax.php'),
+                'platformvalidator' => defined('MAILGUN_PUBLIC') ? MAILGUN_PUBLIC : ''
             ]);
         }
     }
