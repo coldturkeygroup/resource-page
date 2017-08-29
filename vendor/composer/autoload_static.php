@@ -23,6 +23,10 @@ class ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
         ),
+        'C' => 
+        array (
+            'Composer\\Installers\\' => 20,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -42,15 +46,9 @@ class ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'C' => 
+        'Composer\\Installers\\' => 
         array (
-            'Composer\\Installers\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/composer/installers/src',
-            ),
+            0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
         ),
     );
 
@@ -65,7 +63,6 @@ class ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit12c4425b6a9da6173210659c6a37ce7c::$classMap;
 
         }, null, ClassLoader::class);
