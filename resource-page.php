@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: Resource Page
- * Version: 1.1.6
+ * Version: 1.1.7
  * Plugin URI: http://www.coldturkeygroup.com/
  * Description: Custom resource page containing informational videos for potential home buyers
  * Author: Cold Turkey Group
@@ -24,7 +24,7 @@ if (!defined('RESOURCE_PAGE_PLUGIN_PATH')) {
 }
 
 if (!defined('RESOURCE_PAGE_PLUGIN_VERSION')) {
-    define('RESOURCE_PAGE_PLUGIN_VERSION', '1.1.6');
+    define('RESOURCE_PAGE_PLUGIN_VERSION', '1.1.7');
 }
 
 require_once('classes/class-resource-page.php');

@@ -3,7 +3,7 @@ Contributors: Aaron Huisinga
 Tags: real estate, platform, resource page
 Requires at least: 3.5
 Tested up to: 5.1
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 
 Resource page containing numerous informational videos for potential home buyers
 
